@@ -1,5 +1,5 @@
 ## Défi National de la Nuit de l'Info 2025 - Équipe Infinite Goon
-[Site de la NID](https://www.nuitdelinfo.com/) - [Sujet National 2025](https://www.nuitdelinfo.com/materiel_communication/2025/LaNuitDeLInfo2025-Sujet.pdf) - [Notre participation](infinitegoonnid.alwaysdata.net/)
+[Site de la NID](https://www.nuitdelinfo.com/) - [Sujet National 2025](https://www.nuitdelinfo.com/materiel_communication/2025/LaNuitDeLInfo2025-Sujet.pdf) - [Notre participation](https://infinitegoonnid.alwaysdata.net/)
 
 Reproduction d'une interface graphique primaire d'un OS libre
 . Ajout de la possibilité de changer de fond d'écran, de passer entre plusieurs applications, et d'être redirigé vers nos autres participations de cette année.
