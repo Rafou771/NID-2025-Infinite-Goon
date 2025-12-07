@@ -4,16 +4,18 @@ from platform import window
 class Icon():
     MARGIN = 0.01
     TEXT = 0.2
+    TEXT_MARGIN = 0.1
+    DIVISION = (14, 9)
     def __init__(
         self,
         name : str,
         font : str,
         icon : pygame.Surface,
-        on_hover : tuple[3],
-        on_click : tuple[3],
-        text_color : tuple[3],
+        on_hover : tuple[int, int, int],
+        on_click : tuple[int, int, int],
+        text_color : tuple[int, int, int],
         url : str,
-        wn_size : tuple[2],
+        wn_size : tuple[int, int],
         icon_i : int
     ):
         self.name = name
@@ -27,10 +29,10 @@ class Icon():
         self.clicked = False
 
         self.rect = pygame.Rect(
-            self.MARGIN*self.wn_size[0]*(self.icon_i+1)+self.icon_i*int(self.wn_size[0]/14),
-            (self.icon_i//14)*(self.wn_size[1]//9)+(self.MARGIN*self.wn_size[1])*(self.icon_i//14+1),
-            self.wn_size[0]//14,
-            self.wn_size[1]//9
+            self.MARGIN*self.wn_size[0]*(self.icon_i+1)+self.icon_i*int(self.wn_size[0]/self.DIVISION[0]),
+            (self.icon_i//self.DIVISION[0])*(self.wn_size[1]//self.DIVISION[1])+(self.MARGIN*self.wn_size[1])*(self.icon_i//self.DIVISION[0]+1),
+            self.wn_size[0]//self.DIVISION[0],
+            self.wn_size[1]//self.DIVISION[1]+(self.MARGIN*self.wn_size[1])//2
         )
 
         self.text = pygame.font.Font(self.text_font, int(self.rect.w*self.TEXT)).render(self.name, False, self.text_color)
@@ -47,26 +49,24 @@ class Icon():
         if not event.type == pygame.MOUSEBUTTONDOWN:
             return
 
-        x, y = pygame.mouse.get_pos()
         if event.button == 1:
-            if self.on_hover(x, y):
+            if self.on_hover(event.pos[0], event.pos[1]):
                 if self.clicked:
                     window.open(self.url, "_blank")
                 self.clicked = True
             else:
                 self.clicked = False
-        elif self.on_hover(x, y) and event.button == 2:
+        elif self.on_hover(event.pos[0], event.pos[1]) and event.button == 2:
             window.open(self.url, "_blank")
         else:
             self.clicked = False
 
-    def draw(self, wn : pygame.Surface):
+    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]):
         wn.blit(self.icon, self.rect) # Icon draw
         wn.blit(self.text, self.text_rect) # Text draw
 
-        x, y = pygame.mouse.get_pos()
-        if self.clicked or self.on_hover(x, y):
-            surface = pygame.Surface((self.rect.w, self.rect.h+self.text_rect.h+0.1*self.rect.h))
+        if self.clicked or self.on_hover(mouse_pos[0], mouse_pos[1]):
+            surface = pygame.Surface((self.rect.w, self.rect.h+self.text_rect.h+self.TEXT_MARGIN*self.rect.h))
             surface.set_alpha(self.on_click_c[3] if self.clicked else self.on_hover_c[3])
             surface.fill(self.on_click_c[:3] if self.clicked else self.on_hover_c[:3])
             wn.blit(surface, self.rect.topleft)

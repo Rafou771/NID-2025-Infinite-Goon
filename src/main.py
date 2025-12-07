@@ -1,10 +1,11 @@
 import pygame
-import asyncio
-import os
-from utils import get_config
+from platform import window
+
+from asyncio import run, sleep
+from os import listdir
+
 from classes import OptionList, Icon
 from classes.app import Option_app, Credit_app, Shortcut_app
-from platform import window
 
 ### CUSTOM GLOBAL VAR
 MAX_FPS = 60
@@ -12,73 +13,76 @@ MAX_FPS = 60
 ### IMAGE LOADING
 app_icons = {} 
 
-for text in os.listdir("./img/icon"):
+for text in listdir("./assets/icon"):
     text = text.replace(".png", "")
-    img = pygame.PixelArray(pygame.image.load("./img/icon/" + text + ".png").convert_alpha())
+    img = pygame.PixelArray(pygame.image.load("./assets/icon/" + text + ".png").convert_alpha())
     img.replace((0, 0, 0), (255, 255, 255))
+
     app_icons.update({text: img.surface})
-app_icons.update({"favicon" : pygame.image.load("./img/favicon.png").convert_alpha()})
 
 bg_imgs = {
-    "./img/bg/" + text: pygame.image.load("./img/bg/" + text).convert()
-    for text in os.listdir("./img/bg")
+    "./assets/bg/" + text: pygame.image.load("./assets/bg/" + text).convert()
+    for text in listdir("./assets/bg")
 }
 
 bg_img_tmp = window.localStorage.getItem("bg_img")
+worked = False
 if bg_img_tmp:
-    bg_img = bg_imgs[bg_img_tmp]
-else:
-    path = get_config("default_bg_path")
-    bg_img = bg_imgs[path]
-    window.localStorage.setItem("bg_img", path)
+    try:
+        bg_img = bg_imgs[bg_img_tmp]
+        worked = True
+    except:
+        pass
+
+if not worked:
+    default_bg = "./assets/bg/linux1.jpg"
+    bg_img = bg_imgs[default_bg]
+    window.localStorage.setItem("bg_img", default_bg)
 
 async def main():
     ### INIT
     pygame.init()
     pygame.font.init()
     pygame.display.set_caption('InfiniteDistro')
-
-    clock = pygame.time.Clock()
+    
     wn = pygame.display.set_mode((0, 0))
-
-    wn_width, wn_height = pygame.display.get_window_size()
+    wn_size = wn.get_size()
 
     ### COMPONENTS
     apps = {
         "option": Option_app(
             app_icons, # Header icons
-            (wn_width, wn_height), # Resolution
+            wn_size, # Resolution
             bg_imgs # Bg images
         ),
         "credit": Credit_app(
             app_icons, # Header icons
-            (wn_width, wn_height) # Resolution
+            wn_size # Resolution
         ),
         "shortcut" : Shortcut_app(
             app_icons, # Header icons
-            (wn_width, wn_height), # Resolution
+            wn_size, # Resolution
             {
                 "F11" : "Plein écran",
                 "echap" : "Réduire une fenêtre",
-                "o": "options",
-                "r" : "raccourcis",
-                "c" : "crédits",
+                "o": "Ouvrir les options",
+                "r" : "Ouvrir les raccourcis",
+                "c" : "Ouvrir les crédits",
             }
         )
     }
 
     ol = OptionList(
-        (wn_width*0.1, wn_height*0.032), # Option size
         [ # Options
             {"label": "options", "icon": app_icons["option"], "function": lambda : apps["option"].open(apps)}, 
-            {"label": "raccourcis", "icon": app_icons["clock"], "function": lambda :  apps["shortcut"].open(apps)},
-            {"label": "crédits", "icon": app_icons["info"], "function": lambda :  apps["credit"].open(apps)}
+            {"label": "raccourcis", "icon": app_icons["clock"], "function": lambda : apps["shortcut"].open(apps)},
+            {"label": "crédits", "icon": app_icons["info"], "function": lambda : apps["credit"].open(apps)}
         ],
         (12, 11, 56), # Option color
         (42, 41, 114), # On hover color
         "./assets/xp.otf", # Text font
         (255, 255, 255), # Text color
-        (wn_width, wn_height)
+        wn_size # Window size
     )
 
     icons = [
@@ -90,7 +94,7 @@ async def main():
             (147, 186, 237, 40),
             (255, 255, 255),
             "http://snake-nuit-info.web.app/",
-            (wn_width, wn_height),
+            wn_size,
             0
         ),
         Icon(
@@ -101,23 +105,22 @@ async def main():
             (147, 186, 237, 40),
             (255, 255, 255),
             "http://infinitegoon.alwaysdata.net/chatbotai/",
-            (wn_width, wn_height),
+            wn_size,
             1
         )
     ]
 
     ### MAIN
     running = True
-    dt = 0
-    full_screen = False
     while running:
+        ### EVENTS
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT: # System
                 running = False
             if event.type == pygame.VIDEORESIZE:
-                wn_width = event.w 
-                wn_height = event.h
-            if event.type == pygame.MOUSEBUTTONDOWN:
+                wn_size = event.size
+
+            if event.type == pygame.MOUSEBUTTONDOWN: # Apps and icons
                 ol.update(event)
                 bg_img = apps["option"].update(event)
                 bg_img = apps["credit"].update(event, bg_imgs, apps)
@@ -125,33 +128,31 @@ async def main():
                 for icon in icons:
                     icon.update(event)
 
-        wn.blit(pygame.transform.smoothscale(bg_img, (wn_width, wn_height)), (0, 0))
-        for icon in icons:
-            icon.draw(wn)
-        ol.draw(wn)
-        for app in apps.values():
-            app.draw(wn)
+            if event.type == pygame.KEYDOWN: # Sortcuts
+                if event.key == pygame.K_o:
+                    apps["option"].open(apps)
+                if event.key == pygame.K_r:
+                    apps["shortcut"].open(apps)
+                if event.key == pygame.K_c:
+                    apps["credit"].open(apps)
+                if event.key == pygame.K_ESCAPE:
+                    for app in apps.values():
+                        if app.toggle:
+                            app.suspend()
+                if event.key == pygame.K_F11:
+                    if not window.document.fullscreenElement:
+                        canvas = window.document.getElementById("canvas")
+                        canvas.requestFullscreen()
+                    else:
+                        window.document.exitFullscreen()
 
-        ### SHORTCUTS
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_o]:
-            apps["option"].open(apps)
-        if keys[pygame.K_r]:
-            apps["shortcut"].open(apps)
-        if keys[pygame.K_c]:
-            apps["credit"].open(apps)
-        if keys[pygame.K_ESCAPE]:
-            for app in apps.values():
-                if app.toggle:
-                    app.suspend()
-        if keys[pygame.K_F11]:
-            if full_screen:
-                wn = pygame.display.set_mode((0, 0))
-            else:
-                wn = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        ### DRAWING
+        wn.blit(pygame.transform.smoothscale(bg_img, wn_size), (0, 0)) # Bg img
+        for el in icons + [ol] + list(apps.values()): # Components
+            el.draw(wn, pygame.mouse.get_pos())
+
+        ### SCREEN UPDATE
         pygame.display.flip()
-        dt = clock.tick(MAX_FPS) / 1000
+        await sleep(0)
 
-        await asyncio.sleep(0)
-
-asyncio.run(main())
+run(main())
