@@ -3,10 +3,18 @@ from classes.App import App
 from platform import window
 
 class Option_app(App):
+    BUTTON_SIZE = (0.18, 0.06)
+    SELECT_COLOR = (255, 255, 255)
+    BUTTON_ON_HOVER = (190, 190, 190)
+    BUTTON_ON_CLICK = (255, 255, 255)
+    BUTTON_COLOR = (54, 54, 54)
+    BG_MARGIN = 0.035
+    BG_SIZE = (1.75, 0.25) # W depends on H
+    BORDER = 0.015
     def __init__(
             self, 
-            icons : dict[str : pygame.Surface], 
-            wn_size : tuple[2], 
+            icons : dict[str, pygame.Surface], 
+            wn_size : tuple[int, int], 
             bg_imgs : list[pygame.Surface]
         ):
         super().__init__(
@@ -21,10 +29,10 @@ class Option_app(App):
         self.bg_imgs = bg_imgs
 
         self.button_rect1 = pygame.Rect(
-            self.rect.x+self.rect.w-int(0.18*self.rect.w)-int(self.HEADER*self.rect.w),
-            self.rect.y+self.rect.h-self.HEADER*self.rect.h-int(self.rect.h*0.06),
-            int(self.rect.w*0.18),
-            int(self.rect.h*0.06)
+            self.rect.x+self.rect.w-int(self.BUTTON_SIZE[0]*self.rect.w)-int(self.HEADER*self.rect.w),
+            self.rect.y+self.rect.h-self.HEADER*self.rect.h-int(self.rect.h*self.BUTTON_SIZE[1]),
+            int(self.rect.w*self.BUTTON_SIZE[0]),
+            int(self.rect.h*self.BUTTON_SIZE[1])
         )
         self.button_rect2 = pygame.Rect(
             self.button_rect1.x-self.button_rect1.w-int(self.MARGIN*self.rect.w),
@@ -32,15 +40,15 @@ class Option_app(App):
             self.button_rect1.w,
             self.button_rect1.h
         )
-        margin = 0.035*self.rect.w
+
         self.bg_rect = pygame.Rect(
-            self.rect.x+self.rect.w//2-margin-0.35*self.rect.w,
-            self.rect.y+self.rect.h//2-(0.25*self.rect.h)//2,
-            0.35*self.rect.w,
-            0.25*self.rect.h
+            self.rect.x+self.rect.w//2-self.BG_MARGIN*self.rect.w-(self.BG_SIZE[1]*self.rect.h)*self.BG_SIZE[0],
+            self.rect.y+self.rect.h//2-self.BG_SIZE[1]*self.rect.h//2,
+            (self.BG_SIZE[1]*self.rect.h)*self.BG_SIZE[0],
+            self.BG_SIZE[1]*self.rect.h
         )
         self.bg_rect2 = pygame.Rect(
-            self.rect.x+self.rect.w//2+margin,
+            self.rect.x+self.rect.w//2+self.BG_MARGIN*self.rect.w,
             self.bg_rect.y,
             self.bg_rect.w,
             self.bg_rect.h
@@ -55,7 +63,7 @@ class Option_app(App):
         super().update(event)
 
         if event.button == 1:
-            x, y = pygame.mouse.get_pos()
+            x, y = event.pos
             if self.on_hover(x, y, self.button_rect1):
                 self.last_selected = self.selected
                 window.localStorage.setItem("bg_img", self.selected)
@@ -65,24 +73,25 @@ class Option_app(App):
                 window.localStorage.setItem("bg_img", self.selected)
             elif self.on_hover(x, y, self.bg_rect):
                 self.last_selected = self.selected
-                self.selected = "./img/bg/linux1.jpg"
+                self.selected = "./assets/bg/linux1.jpg"
             elif self.on_hover(x, y, self.bg_rect2):
                 self.last_selected = self.selected
-                self.selected = "./img/bg/linux2.jpg"
+                self.selected = "./assets/bg/linux2.jpg"
 
         return self.bg_imgs[window.localStorage.getItem("bg_img")]
 
-    def draw(self, wn : pygame.Surface):
-        super().draw(wn)
+    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]):
+        super().draw(wn, mouse_pos)
 
         if not self.toggle:
             return
 
+        ## Updates
         self.button_rect1 = pygame.Rect(
-            self.rect.x+self.rect.w-int(0.18*self.rect.w)-int(self.HEADER*self.rect.w),
-            self.rect.y+self.rect.h-self.HEADER*self.rect.h-int(self.rect.h*0.06),
-            int(self.rect.w*0.18),
-            int(self.rect.h*0.06)
+            self.rect.x+self.rect.w-int(self.BUTTON_SIZE[0]*self.rect.w)-int(self.HEADER*self.rect.w),
+            self.rect.y+self.rect.h-self.HEADER*self.rect.h-int(self.rect.h*self.BUTTON_SIZE[1]),
+            int(self.rect.w*self.BUTTON_SIZE[0]),
+            int(self.rect.h*self.BUTTON_SIZE[1])
         )
         self.button_rect2 = pygame.Rect(
             self.button_rect1.x-self.button_rect1.w-int(self.MARGIN*self.rect.w),
@@ -90,20 +99,22 @@ class Option_app(App):
             self.button_rect1.w,
             self.button_rect1.h
         )
-        margin = 0.025*self.rect.w
+
         self.bg_rect = pygame.Rect(
-            self.rect.x+self.rect.w//2-margin-0.35*self.rect.w,
-            self.rect.y+self.rect.h//2-(0.25*self.rect.h)//2,
-            0.35*self.rect.w,
-            0.25*self.rect.h
+            self.rect.x+self.rect.w//2-self.BG_MARGIN*self.rect.w-(self.BG_SIZE[1]*self.rect.h)*self.BG_SIZE[0],
+            self.rect.y+self.rect.h//2-self.BG_SIZE[1]*self.rect.h//2,
+            (self.BG_SIZE[1]*self.rect.h)*self.BG_SIZE[0],
+            self.BG_SIZE[1]*self.rect.h
         )
         self.bg_rect2 = pygame.Rect(
-            self.rect.x+self.rect.w//2+margin,
+            self.rect.x+self.rect.w//2+self.BG_MARGIN*self.rect.w,
             self.bg_rect.y,
             self.bg_rect.w,
             self.bg_rect.h
         )
-        text = pygame.font.Font("./assets/xp.otf", int(0.07*self.rect.w)).render("Fond d'écran", False, self.text_color) # Label draw
+
+        ## Label draw
+        text = pygame.font.Font("./assets/xp.otf", int(0.07*self.rect.w)).render("Fond d'écran", False, self.text_color)
         wn.blit(text, pygame.Rect(
                 self.rect.x+self.rect.width//2-text.get_size()[0]//2,
                 self.rect.y+int(0.1*self.rect.h),
@@ -112,24 +123,20 @@ class Option_app(App):
             )
         )
 
-        x, y = pygame.mouse.get_pos()
-        if self.on_hover(x, y, self.button_rect1):
-            color = (190, 190, 190)
-        elif self.selected != self.last_selected:
-            color = (255, 255, 255)
-        else:
-            color = (54, 54, 54)
-        pygame.draw.rect(wn, color, self.button_rect1)
-        if self.on_hover(x, y, self.button_rect2):
-            color = (190, 190, 190)
-        elif self.selected != self.last_selected:
-            color = (255, 255, 255)
-        else:
-            color = (54, 54, 54)
-        pygame.draw.rect(wn, color, self.button_rect2)
+        ## Button draw
+        for rect in [self.button_rect1, self.button_rect2]:
+            if self.on_hover(mouse_pos[0], mouse_pos[1], rect):
+                color = self.BUTTON_ON_HOVER
+            elif self.selected != self.last_selected:
+                color = self.BUTTON_ON_CLICK
+            else:
+                color = self.BUTTON_COLOR
+            pygame.draw.rect(wn, color, rect)
+
+        text_color = [255-self.text_color[i] for i in range(len(self.text_color))]
 
         font = pygame.font.Font("./assets/xp.otf", int(self.button_rect1.h*0.95))
-        text = font.render("Appliquer", False, (0, 0, 0))
+        text = font.render("Appliquer", False, text_color)
         wn.blit(text, pygame.Rect(
                 self.button_rect1.x-text.get_size()[0]//2+self.button_rect1.w//2,
                 self.button_rect1.y,
@@ -138,7 +145,7 @@ class Option_app(App):
             )
         )
 
-        text = font.render("Sauvegarder", False, (0, 0, 0))
+        text = font.render("Sauvegarder", False, text_color)
         wn.blit(text, pygame.Rect(
                 self.button_rect2.x-text.get_size()[0]//2+self.button_rect2.w//2,
                 self.button_rect2.y,
@@ -147,28 +154,17 @@ class Option_app(App):
             )
         )
 
-        rect = pygame.Rect(
-            self.rect.x+self.rect.w//2-margin-0.35*self.rect.w,
-            self.rect.y+self.rect.h//2-(0.25*self.rect.h)//2,
-            0.35*self.rect.w,
-            0.25*self.rect.h
-        )
-        if self.selected == "./img/bg/linux1.jpg":
-            pygame.draw.rect(wn, (255, 255, 255), pygame.Rect(
-                    self.bg_rect.x-margin//2,
-                    self.bg_rect.y-margin//2,
-                    self.bg_rect.w+margin,
-                    self.bg_rect.h+margin
+        # Vignette draw
+        for path, rect in {
+            "./assets/bg/linux1.jpg" : self.bg_rect,
+            "./assets/bg/linux2.jpg" : self.bg_rect2
+        }.items():
+            if self.selected == path:
+                pygame.draw.rect(wn, self.SELECT_COLOR, pygame.Rect(
+                        rect.x-self.BORDER*self.rect.w//2,
+                        rect.y-self.BORDER*self.rect.w//2,
+                        rect.w+self.BORDER*self.rect.w,
+                        rect.h+self.BORDER*self.rect.w
+                    )
                 )
-            )
-        wn.blit(pygame.transform.smoothscale(self.bg_imgs["./img/bg/linux1.jpg"], self.bg_rect.size),  self.bg_rect)
-
-        if self.selected == "./img/bg/linux2.jpg":
-            pygame.draw.rect(wn, (255, 255, 255), pygame.Rect(
-                    self.bg_rect2.x-margin//2,
-                    self.bg_rect2.y-margin//2,
-                    self.bg_rect2.w+margin,
-                    self.bg_rect2.h+margin
-                )
-            )
-        wn.blit(pygame.transform.smoothscale(self.bg_imgs["./img/bg/linux2.jpg"], self.bg_rect2.size), self.bg_rect2)
+            wn.blit(pygame.transform.smoothscale(self.bg_imgs[path], rect.size), rect)
