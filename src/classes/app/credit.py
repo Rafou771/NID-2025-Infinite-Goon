@@ -13,7 +13,7 @@ class Credit_app(App):
         self, 
         icons : dict[str, pygame.Surface], 
         wn_size : tuple[int, int]
-    ):
+    ) -> None:
         super().__init__(
             "Crédits", # Name
             wn_size, # Screen resolution
@@ -32,11 +32,12 @@ class Credit_app(App):
             self.icon.get_height()
         )
 
-    def update(self, event : pygame.event.Event, bg_imgs : list[pygame.Surface], apps : dict[str, App]):
+    def update(self, event : pygame.event.Event, bg_imgs : list[pygame.Surface], apps : dict[str, App]) -> pygame.Surface:
         super().update(event)
 
-        if not event.type == pygame.MOUSEBUTTONDOWN:
-            return
+        current_img = bg_imgs[window.localStorage.getItem("bg_img")]
+        if not event.type == pygame.MOUSEBUTTONDOWN or not self.toggle:
+            return current_img
 
         self.icon = pygame.transform.smoothscale(self.icons["favicon"], (self.rect.w*self.FAVICON_SIZE,)*2)
         self.icon_rect = pygame.Rect(
@@ -51,9 +52,10 @@ class Credit_app(App):
             window.localStorage.setItem("bg_img", "./assets/bg/linux3.jpg")
             apps["option"].selected = "./assets/bg/linux3.jpg"
             return bg_imgs["./assets/bg/linux3.jpg"]
-        return bg_imgs[window.localStorage.getItem("bg_img")]
 
-    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]):
+        return current_img
+
+    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]) -> None:
         super().draw(wn, mouse_pos)
 
         if not self.toggle:

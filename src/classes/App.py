@@ -17,7 +17,7 @@ class App():
         icons : Dict[Literal["quit", "reajust", "reduce"], pygame.Surface],
         font : str,
         text_color : tuple[int, int, int]
-    ):
+    ) -> None:
         self.name = name
         self.wn_size = wn_size
         self.bg_color = bg_color
@@ -38,12 +38,12 @@ class App():
         self.font = pygame.font.Font(font, int(self.LABEL*self.HEADER*self.wn_size[1]))
         self.option_on_hover = lambda x, y, i: y >= self.rect.y-self.HEADER*self.wn_size[1] and y <= self.rect.y-self.HEADER*y+self.HEADER*y-self.MARGIN*self.HEADER*y and x >= self.rect.x+self.rect.width-self.rect.width*self.MARGIN*i-(self.HEADER*self.wn_size[1]-self.MARGIN*self.HEADER*self.wn_size[1])*i and x <= self.rect.x+self.rect.width-self.rect.width*self.MARGIN*i-(self.HEADER*self.wn_size[1]-self.MARGIN*self.HEADER*self.wn_size[1])*(i-1) 
 
-    def open(self, apps : dict[str, Any]):
+    def open(self, apps : dict[str, Any]) -> None:
         for app in apps.values():
             app.suspend()
         self.toggle = True
 
-    def reset(self):
+    def reset(self) -> None:
         self.rect = pygame.Rect(
             self.wn_size[0]//2-(self.SIZE[0]*self.wn_size[0])//2, 
             self.wn_size[1]//2-((self.SIZE[1]-self.HEADER)*self.wn_size[1])//2+self.HEADER*self.wn_size[1], 
@@ -51,11 +51,11 @@ class App():
             (self.SIZE[1]-self.HEADER)*self.wn_size[1]
         )
 
-    def close(self):
+    def close(self) -> None:
         self.toggle = False
         self.reset()
 
-    def suspend(self):
+    def suspend(self) -> None:
         self.toggle = False
 
     def expand(self):
@@ -70,8 +70,8 @@ class App():
             self.reset()
         self.expanded = not self.expanded
 
-    def update(self, event : pygame.event.Event):
-        if not event.type == pygame.MOUSEBUTTONDOWN:
+    def update(self, event : pygame.event.Event) -> None:
+        if not event.type == pygame.MOUSEBUTTONDOWN or not self.toggle:
             return
 
         if event.button == 1:
@@ -82,7 +82,7 @@ class App():
             elif self.option_on_hover(event.pos[0], event.pos[1], 1):
                 self.close()
 
-    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]):
+    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]) -> None:
         if not self.toggle: # App icon
             return
 
