@@ -1,11 +1,13 @@
 # Défi National de la Nuit de l'Info 2025 - Équipe Infinite Goon
 [Site de la NID](https://www.nuitdelinfo.com/) - [Sujet National 2025](https://www.nuitdelinfo.com/materiel_communication/2025/LaNuitDeLInfo2025-Sujet.pdf) - [Notre participation](https://rafou771.github.io/NID-2025-Infinite-Goon/)
 
-Reproduction d'une interface graphique primaire d'un OS libre
-. Ajout de la possibilité de changer de fond d'écran, de passer entre plusieurs applications, et d'être redirigé vers nos autres participations de cette année.
-La touche principale est le click droit. Un easter egg est présent dans les crédits.
+Reproduction d'une interface graphique primaire d'un OS libre. Ajout de la possibilité de changer de fond d'écran, de passer entre plusieurs applications, et d'être redirigé vers nos autres participations de cette année. La touche principale est le clic droit. Un easter egg est présent dans les crédits.
 
 ## Installation 
+`$ git clone https://github.com/Rafou771/NID-2025-Infinite-Goon`
+
+`$ cd NID-2025-Infinite-Goon`
+
 `$ python3 -m pip install -r requirements.txt`
 
 ## Compilation

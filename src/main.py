@@ -44,7 +44,7 @@ async def main():
     pygame.init()
     pygame.font.init()
     pygame.display.set_caption('InfiniteDistro')
-    
+
     wn = pygame.display.set_mode((0, 0))
     wn_size = wn.get_size()
 
@@ -148,8 +148,9 @@ async def main():
 
         ### DRAWING
         wn.blit(pygame.transform.smoothscale(bg_img, wn_size), (0, 0)) # Bg img
+        mouse_pos = pygame.mouse.get_pos()
         for el in icons + [ol] + list(apps.values()): # Components
-            el.draw(wn, pygame.mouse.get_pos())
+            el.draw(wn, mouse_pos)
 
         ### SCREEN UPDATE
         pygame.display.flip()

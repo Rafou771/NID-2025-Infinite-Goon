@@ -17,7 +17,7 @@ class Icon():
         url : str,
         wn_size : tuple[int, int],
         icon_i : int
-    ):
+    ) -> None:
         self.name = name
         self.text_font = font
         self.on_hover_c = on_hover
@@ -45,7 +45,7 @@ class Icon():
         self.on_hover = lambda x, y : x >= self.rect.x and x <= self.rect.x + self.rect.w and y >= self.rect.y and y <= self.text_rect.h+self.text_rect.y
         self.icon = pygame.transform.smoothscale(icon, self.rect.size)
 
-    def update(self, event : pygame.event.Event):
+    def update(self, event : pygame.event.Event) -> None:
         if not event.type == pygame.MOUSEBUTTONDOWN:
             return
 

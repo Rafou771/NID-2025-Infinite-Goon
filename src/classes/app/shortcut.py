@@ -12,7 +12,7 @@ class Shortcut_app(App):
             icons : dict[str, pygame.Surface], 
             wn_size : tuple[int, int], 
             data : dict[str, str]
-        ):
+        ) -> None:
         super().__init__(
             "Raccourcis", # Name
             wn_size, # Screen resolution
@@ -24,7 +24,7 @@ class Shortcut_app(App):
         )
         self.data = data
 
-    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]):
+    def draw(self, wn : pygame.Surface, mouse_pos : tuple[int, int]) -> None:
         super().draw(wn, mouse_pos)
 
         if not self.toggle:
